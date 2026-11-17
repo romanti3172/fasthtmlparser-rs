@@ -10,9 +10,8 @@ becomes a flat list of tags that hold only positions in the source. Text, attrib
 ask for them, and a value that needs no decoding is a slice of the page.
 
 The whole API is ported: the parser, attributes, HTML5 entities, visible text and text with line breaks,
-`find` / `find_all`, navigation, links, XPath 1.0, CSS selectors and the one-call shortcuts. There are also a
-[Go port](https://github.com/romanti3172/fasthtmlparser) and a
-[JavaScript / TypeScript port](https://github.com/romanti3172/fasthtmlparser-js).
+`find` / `find_all`, navigation, links, XPath 1.0, CSS selectors and the one-call shortcuts. The parser is also
+available in [other languages](#other-languages).
 
 ```toml
 [dependencies]
@@ -164,6 +163,18 @@ Scrape a page: parse and extract the records. Books: 20 × title, price, rating;
   the tables of the Go port (themselves generated from the C# sources)
 - `bench/`: benchmarks in their own workspace, so the library has one dependency
 - `tools/conformance/`: builds the conformance data from the .NET version
+
+## Other languages
+
+The same parser is available for:
+
+| Language | Package | Source |
+|---|---|---|
+| C# (.NET 9 and 10) | [z3l.FastHtmlParser](https://www.nuget.org/packages/z3l.FastHtmlParser) on NuGet | [romanti3172/z3l.FastHtmlParser](https://github.com/romanti3172/z3l.FastHtmlParser) |
+| Go | `github.com/romanti3172/fasthtmlparser` | [romanti3172/fasthtmlparser](https://github.com/romanti3172/fasthtmlparser) |
+| Rust | [fasthtmlparser](https://crates.io/crates/fasthtmlparser) on crates.io | [romanti3172/fasthtmlparser-rs](https://github.com/romanti3172/fasthtmlparser-rs) |
+| JavaScript / TypeScript | [z3l-fasthtmlparser](https://www.npmjs.com/package/z3l-fasthtmlparser) on npm | [romanti3172/fasthtmlparser-js](https://github.com/romanti3172/fasthtmlparser-js) |
+| Python | [fasthtmlparser](https://pypi.org/project/fasthtmlparser/) on PyPI | [romanti3172/fasthtmlparser-py](https://github.com/romanti3172/fasthtmlparser-py) |
 
 ## License
 
