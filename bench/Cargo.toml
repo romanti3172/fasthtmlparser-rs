@@ -1,0 +1,18 @@
+[package]
+name = "fasthtmlparser-bench"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+# Its own workspace: the benchmark dependencies stay out of the library.
+[workspace]
+
+[dependencies]
+fasthtmlparser = { path = ".." }
+scraper = "0.29"
+tl = "0.7"
+skyscraper = "0.7"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

@@ -1,0 +1,7 @@
+# Rust sources with LF everywhere.
+*.rs text eol=lf
+*.toml text eol=lf
+
+# Test pages and the expected .NET output are compared byte for byte (positions are byte offsets):
+# git must never convert their line endings.
+testdata/** -text linguist-vendored
