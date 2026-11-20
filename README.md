@@ -4,6 +4,8 @@
 [![crates.io](https://img.shields.io/crates/v/fasthtmlparser.svg)](https://crates.io/crates/fasthtmlparser)
 [![docs.rs](https://docs.rs/fasthtmlparser/badge.svg)](https://docs.rs/fasthtmlparser)
 
+**Website:** [fasthtmlparser.com](https://fasthtmlparser.com): try the parser on any page, documentation and every language.
+
 Rust port of [z3l.FastHtmlParser](https://github.com/romanti3172/z3l.FastHtmlParser): a fast HTML / XML parser for
 scraping, with **XPath 1.0** and **CSS selectors**. It is built for extracting data, not for building a DOM: a page
 becomes a flat list of tags that hold only positions in the source. Text, attributes and entities are read when you
