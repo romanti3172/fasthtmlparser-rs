@@ -275,7 +275,22 @@
     "//Custom-El": "ok",
     "//svg/path": "ok",
     "//*[local-name()=\"path\"]": "ok",
-    "//dl/dt[. = \"Price\"]/following-sibling::dd[1]": "ok"
+    "//dl/dt[. = \"Price\"]/following-sibling::dd[1]": "ok",
+    "//*[contains(concat(' ', @class, ' '), ' price ')]": "ok",
+    "//*[contains(concat(' ', @class, ' '), '  ')]": "ok",
+    "//*[contains(concat('', @class, ''), '')]": "ok",
+    "//*[contains(@class, 'ce o')]": "ok",
+    "//*[starts-with(@class, 'price')]": "ok",
+    "//*[starts-with(concat('x', @rel), 'x')]": "ok",
+    "//*[not(contains(concat(' ', @class, ' '), ' price '))]": "ok",
+    "//article[contains(concat(' ', @class, ' '), ' product_pod ')]": "ok",
+    "//div[contains(concat(' ', @class, ' '), ' quote ')]//a[contains(concat(' ', @class, ' '), ' tag ')]": "ok",
+    "//li[contains(concat(' ', @class, ' '), ' next ')]/a/@href": "ok",
+    "//a[starts-with(@href, '/')]": "ok",
+    "//a[ends-with(@href, '.html')]": "ok",
+    "//*[ends-with(concat(@class, ' '), 'pod ')]": "ok",
+    "//*[contains(concat(' ', @class, ' '), ' a&b ')]": "ok",
+    "count(//*[contains(concat(' ', @class, ' '), ' col-sm-8 ')])": "ok"
   },
   "css": {
     " lang=": "error",

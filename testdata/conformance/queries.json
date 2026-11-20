@@ -275,7 +275,22 @@
   "//Custom-El",
   "//svg/path",
   "//*[local-name()=\"path\"]",
-  "//dl/dt[. = \"Price\"]/following-sibling::dd[1]"
+  "//dl/dt[. = \"Price\"]/following-sibling::dd[1]",
+  "//*[contains(concat(' ', @class, ' '), ' price ')]",
+  "//*[contains(concat(' ', @class, ' '), '  ')]",
+  "//*[contains(concat('', @class, ''), '')]",
+  "//*[contains(@class, 'ce o')]",
+  "//*[starts-with(@class, 'price')]",
+  "//*[starts-with(concat('x', @rel), 'x')]",
+  "//*[not(contains(concat(' ', @class, ' '), ' price '))]",
+  "//article[contains(concat(' ', @class, ' '), ' product_pod ')]",
+  "//div[contains(concat(' ', @class, ' '), ' quote ')]//a[contains(concat(' ', @class, ' '), ' tag ')]",
+  "//li[contains(concat(' ', @class, ' '), ' next ')]/a/@href",
+  "//a[starts-with(@href, '/')]",
+  "//a[ends-with(@href, '.html')]",
+  "//*[ends-with(concat(@class, ' '), 'pod ')]",
+  "//*[contains(concat(' ', @class, ' '), ' a&b ')]",
+  "count(//*[contains(concat(' ', @class, ' '), ' col-sm-8 ')])"
  ],
  "css": [
   " lang=",
