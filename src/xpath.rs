@@ -8,7 +8,7 @@ use std::sync::{Arc, LazyLock, Mutex};
 
 use crate::attributes::AttrScanner;
 use crate::chars::equal_fold;
-use crate::decode::{decode, normalize_newlines};
+use crate::decode::{decode, needs_decoding, normalize_newlines};
 use crate::document::attr_equals;
 use crate::parse::{lookup_tag, raw_text_end};
 use crate::text::clear_tags;
@@ -936,6 +936,15 @@ enum Expr {
     },
     /// [@name]
     AttributeExists(String),
+    /// contains/starts-with/ends-with(concat('prefix', @name, 'suffix'), 'needle') (prefix and suffix may be empty):
+    /// tested on the attribute value in place, without a node-set and strings for every element.
+    AttributeTest {
+        func: Func,
+        prefix: String,
+        name: String,
+        suffix: String,
+        needle: String,
+    },
     /// A location path, absolute or relative, optionally starting from a filter expression: (//a)[1]/@href.
     Path {
         start: Option<Box<Expr>>,
@@ -962,7 +971,8 @@ impl Expr {
             Expr::Logic { .. }
             | Expr::Compare { .. }
             | Expr::AttributeEquals { .. }
-            | Expr::AttributeExists(_) => XType::Boolean,
+            | Expr::AttributeExists(_)
+            | Expr::AttributeTest { .. } => XType::Boolean,
             Expr::Union(..) | Expr::Path { .. } | Expr::Filter { .. } => XType::NodeSet,
             Expr::Function { typ, .. } => *typ,
         }
@@ -1000,7 +1010,8 @@ impl Expr {
             Expr::Logic { .. }
             | Expr::Compare { .. }
             | Expr::AttributeEquals { .. }
-            | Expr::AttributeExists(_) => Value::Bool(self.eval_bool(c)),
+            | Expr::AttributeExists(_)
+            | Expr::AttributeTest { .. } => Value::Bool(self.eval_bool(c)),
             Expr::Arith { op, left, right } => {
                 let x = left.eval_number(c);
                 let y = right.eval_number(c);
@@ -1071,6 +1082,38 @@ impl Expr {
                 }
             }
             Expr::AttributeExists(name) => attribute_of(doc, &c.node, name).is_some(),
+            Expr::AttributeTest {
+                func,
+                prefix,
+                name,
+                suffix,
+                needle,
+            } => {
+                // a missing attribute is an empty node-set, whose string-value is ""
+                let raw = attribute_of(doc, &c.node, name).unwrap_or("");
+                let value = if needs_decoding(raw) {
+                    decode(raw, true)
+                } else {
+                    Cow::Borrowed(raw)
+                };
+                if prefix.is_empty() && suffix.is_empty() {
+                    return test_string(*func, &value, needle);
+                }
+                let len = prefix.len() + value.len() + suffix.len();
+                let mut stack = [0u8; 256];
+                let mut heap = Vec::new();
+                let joined: &mut [u8] = if len <= stack.len() {
+                    &mut stack[..len]
+                } else {
+                    heap.resize(len, 0);
+                    &mut heap[..]
+                };
+                joined[..prefix.len()].copy_from_slice(prefix.as_bytes());
+                joined[prefix.len()..prefix.len() + value.len()].copy_from_slice(value.as_bytes());
+                joined[prefix.len() + value.len()..].copy_from_slice(suffix.as_bytes());
+                // three UTF-8 strings joined: always valid
+                std::str::from_utf8(joined).is_ok_and(|s| test_string(*func, s, needle))
+            }
             _ => to_boolean(&self.eval(c)),
         }
     }
@@ -2273,8 +2316,53 @@ impl Compiler {
                 t.position,
             ));
         }
-        Ok(Expr::Function { func, args, typ })
+        Ok(make_attribute_test(func, args, typ))
     }
+}
+
+fn test_string(func: Func, s: &str, needle: &str) -> bool {
+    match func {
+        Func::StartsWith => s.starts_with(needle),
+        Func::EndsWith => s.ends_with(needle),
+        _ => s.contains(needle),
+    }
+}
+
+/// contains(@a, 'x'), starts-with(...), ends-with(...), also with the attribute wrapped in literals
+/// (contains(concat(' ', @class, ' '), ' x '), the usual class test), are evaluated on the attribute in place.
+fn make_attribute_test(func: Func, args: Vec<Expr>, typ: XType) -> Expr {
+    if matches!(func, Func::Contains | Func::StartsWith | Func::EndsWith) {
+        if let Expr::Literal(needle) = &args[1] {
+            let found = if let Some(name) = attribute_name(&args[0]) {
+                Some((String::new(), name.to_string(), String::new()))
+            } else if let Expr::Function {
+                func: Func::Concat,
+                args: inner,
+                ..
+            } = &args[0]
+            {
+                match inner.as_slice() {
+                    [Expr::Literal(prefix), attribute, Expr::Literal(suffix)] => {
+                        attribute_name(attribute)
+                            .map(|name| (prefix.clone(), name.to_string(), suffix.clone()))
+                    }
+                    _ => None,
+                }
+            } else {
+                None
+            };
+            if let Some((prefix, name, suffix)) = found {
+                return Expr::AttributeTest {
+                    func,
+                    prefix,
+                    name,
+                    suffix,
+                    needle: needle.clone(),
+                };
+            }
+        }
+    }
+    Expr::Function { func, args, typ }
 }
 
 fn can_start_step(t: &Token) -> bool {
