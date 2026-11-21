@@ -1,6 +1,6 @@
 [package]
 name = "fasthtmlparser"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 rust-version = "1.80"
 description = "Fast HTML / XML parser for scraping with XPath 1.0 and CSS selectors: a flat tag list, lazy text and attributes. A port of z3l.FastHtmlParser."
