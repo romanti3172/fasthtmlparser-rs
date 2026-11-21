@@ -397,7 +397,10 @@ impl ParseState<'_> {
         };
 
         // Void elements (<br>, <img>, <meta>, ...) and declarations never contain anything.
-        let is_void = !self.is_xml && key >= 0 && TABLES.void_tags[key as usize];
+        // Neither does markup named "!..." or "?..." (<!doctype>, <?xml ...?>, <?php ...?>, <![if IE]>), in HTML and
+        // in XML alike: a bogus comment in a browser, a declaration or processing instruction in XML. The name starts
+        // with an ASCII letter, '!' or '?' (is_markup_start), and '!' and '?' sort before the letters: one compare.
+        let is_void = src.as_bytes()[tag_start] <= b'?' || (!self.is_xml && key >= 0 && TABLES.void_tags[key as usize]);
         let self_closing = is_void || trim_ascii_end(tag_source).ends_with('/');
 
         if is_void {

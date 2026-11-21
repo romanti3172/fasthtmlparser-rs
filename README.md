@@ -102,7 +102,7 @@ Documents are `Send` and `Sync`; a `Document` owns its source (pass a `String` t
 
 ## Same results as the .NET version
 
-The conformance tests (`src/tests.rs`) compare the Rust port with z3l.FastHtmlParser 1.4.1 (.NET) on the 117 pages of
+The conformance tests (`src/tests.rs`) compare the Rust port with z3l.FastHtmlParser 1.4.1 (.NET) on the 121 pages of
 the Go port: the test fixtures, broken-markup snippets, edge cases (entities, raw text, comments, XML, custom elements,
 600-deep nesting, Unicode whitespace, links of every kind, line breaks), every fixture with `</li> </p> </td> </tr>`
 left out, copies with random end tags dropped, names upper-cased and the page cut off, and copies saved with CR LF and
